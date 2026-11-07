@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, Download, FileSpreadsheet, Globe, LogOut, ChevronRight, CheckCircle2, Loader2, LogIn } from 'lucide-react';
+import { Shield, Download, FileSpreadsheet, Globe, LogOut, ChevronRight, CheckCircle2, Loader2, LogIn, Sun, Moon, Monitor } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import * as XLSX from 'xlsx';
 import Link from 'next/link';
@@ -20,6 +20,29 @@ export function SettingsView({ user }: SettingsViewProps) {
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isExportingCSV, setIsExportingCSV] = useState(false);
   const [exportSuccess, setExportSuccess] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('system');
+
+  React.useEffect(() => {
+    const saved = (localStorage.getItem('fintrack_theme') as 'system' | 'light' | 'dark') || 'system';
+    setTheme(saved);
+  }, []);
+
+  const changeTheme = (newTheme: 'system' | 'light' | 'dark') => {
+    setTheme(newTheme);
+    localStorage.setItem('fintrack_theme', newTheme);
+    const root = document.documentElement;
+    if (newTheme === 'dark') {
+      root.classList.add('dark');
+    } else if (newTheme === 'light') {
+      root.classList.remove('dark');
+    } else {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+  };
 
   const supabase = createClient();
 
@@ -151,6 +174,51 @@ export function SettingsView({ user }: SettingsViewProps) {
                 <span className="font-medium text-slate-700 dark:text-slate-300">Mata Uang Dasar</span>
               </div>
               <span className="font-semibold text-slate-900 dark:text-slate-100 font-mono">IDR (Rp)</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3.5">
+              <div className="flex items-center space-x-3">
+                <Sun className="h-4 w-4 text-slate-400" />
+                <span className="font-medium text-slate-700 dark:text-slate-300">Tema Tampilan</span>
+              </div>
+              <div className="flex items-center space-x-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-900/80">
+                <button
+                  type="button"
+                  onClick={() => changeTheme('light')}
+                  className={`p-1.5 rounded-lg transition-all ${
+                    theme === 'light'
+                      ? 'bg-white text-indigo-600 shadow-xs dark:bg-slate-800'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                  title="Tema Terang"
+                >
+                  <Sun className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => changeTheme('dark')}
+                  className={`p-1.5 rounded-lg transition-all ${
+                    theme === 'dark'
+                      ? 'bg-white text-indigo-600 shadow-xs dark:bg-slate-800'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                  title="Tema Gelap"
+                >
+                  <Moon className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => changeTheme('system')}
+                  className={`p-1.5 rounded-lg transition-all ${
+                    theme === 'system'
+                      ? 'bg-white text-indigo-600 shadow-xs dark:bg-slate-800'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                  title="Otomatis Sistem"
+                >
+                  <Monitor className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3.5">
