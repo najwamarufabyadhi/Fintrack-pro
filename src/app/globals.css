@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --canvas: #F8FAFC;
+    --canvas-dark: #0F172A;
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --border: #E2E8F0;
+    --brand: #4F46E5;
+    --brand-accent: #6366F1;
+    --income: #059669;
+    --expense: #E11D48;
+    --transfer: #2563EB;
+    --text-primary: #0F172A;
+    --text-muted: #64748B;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+  }
+
+  /* Support for Dark Mode */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --canvas: #0F172A;
+      --card: #1E293B;
+      --card-foreground: #F8FAFC;
+      --border: rgba(51, 65, 85, 0.6);
+      --text-primary: #F8FAFC;
+      --text-muted: #94A3B8;
+    }
+
+    body {
+      background-color: var(--canvas);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Utilities for Finance Dashboard */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe bottom inset for modern mobile floating dock */
+.safe-dock-pb {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 16px));
+}
