@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { Wallet, Category } from '@/lib/types/database';
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense', 'transfer']),
@@ -118,4 +119,45 @@ export async function restoreTransaction(transactionId: string) {
   revalidatePath('/');
   revalidatePath('/analytics');
   return { success: true };
+}
+
+/**
+ * Fetch real user wallets and system categories for Quick Add form
+ */
+export async function getWalletsAndCategories() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { wallets: [], categories: [] };
+  }
+
+  const { data: rawWallets } = await supabase
+    .from('wallets')
+    .select('id, name, type, color, initial_balance')
+    .eq('user_id', user.id)
+    .eq('is_archived', false)
+    .order('created_at', { ascending: true });
+
+  // Deduplicate
+  const uniqueWallets: Pick<Wallet, 'id' | 'name' | 'type' | 'color' | 'initial_balance'>[] = [];
+  const seen = new Set<string>();
+  for (const w of rawWallets || []) {
+    if (!seen.has(w.name.trim().toLowerCase())) {
+      seen.add(w.name.trim().toLowerCase());
+      uniqueWallets.push(w);
+    }
+  }
+
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('id, name, icon, type')
+    .order('name', { ascending: true });
+
+  return {
+    wallets: uniqueWallets,
+    categories: (categories as Category[]) || [],
+  };
 }

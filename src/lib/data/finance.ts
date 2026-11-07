@@ -23,10 +23,10 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   if (!user) {
     const demoWallets: (Wallet & { calculatedBalance: number })[] = [
-      { id: '1', user_id: 'guest', name: 'BCA Prioritas', type: 'bank', initial_balance: 15000000, calculatedBalance: 16250000, color: 'from-blue-600 to-indigo-700', is_archived: false, created_at: new Date().toISOString() },
-      { id: '2', user_id: 'guest', name: 'GoPay Saldo', type: 'ewallet', initial_balance: 2000000, calculatedBalance: 2450000, color: 'from-sky-500 to-blue-600', is_archived: false, created_at: new Date().toISOString() },
-      { id: '3', user_id: 'guest', name: 'Kas Tunai Dompet', type: 'cash', initial_balance: 1000000, calculatedBalance: 880000, color: 'from-emerald-600 to-teal-700', is_archived: false, created_at: new Date().toISOString() },
-      { id: '4', user_id: 'guest', name: 'Mandiri Bisnis', type: 'bank', initial_balance: 5000000, calculatedBalance: 5000000, color: 'from-amber-600 to-orange-700', is_archived: false, created_at: new Date().toISOString() },
+      { id: '1', user_id: 'guest', name: 'BCA Prioritas', type: 'bank', initial_balance: 15000000, calculatedBalance: 16250000, color: 'indigo', is_archived: false, created_at: new Date().toISOString() },
+      { id: '2', user_id: 'guest', name: 'GoPay Saldo', type: 'ewallet', initial_balance: 2000000, calculatedBalance: 2450000, color: 'cyan', is_archived: false, created_at: new Date().toISOString() },
+      { id: '3', user_id: 'guest', name: 'Kas Tunai Dompet', type: 'cash', initial_balance: 1000000, calculatedBalance: 880000, color: 'emerald', is_archived: false, created_at: new Date().toISOString() },
+      { id: '4', user_id: 'guest', name: 'Mandiri Bisnis', type: 'bank', initial_balance: 5000000, calculatedBalance: 5000000, color: 'amber', is_archived: false, created_at: new Date().toISOString() },
     ];
 
     return {
@@ -48,17 +48,36 @@ export async function getDashboardData(): Promise<DashboardData> {
     .eq('is_archived', false)
     .order('created_at', { ascending: true });
 
-  const wallets: Wallet[] = rawWallets || [];
+  // Deduplicate any repeated wallets by name for this user (cleans up any race condition duplicates)
+  const uniqueWallets: Wallet[] = [];
+  const seenNames = new Set<string>();
+  const duplicateIdsToDelete: string[] = [];
 
-  // If new user with no wallets yet, auto-create starter pockets
-  if (wallets.length === 0) {
+  for (const w of rawWallets || []) {
+    if (seenNames.has(w.name.trim().toLowerCase())) {
+      duplicateIdsToDelete.push(w.id);
+    } else {
+      seenNames.add(w.name.trim().toLowerCase());
+      uniqueWallets.push(w);
+    }
+  }
+
+  // Delete duplicates in the background if found
+  if (duplicateIdsToDelete.length > 0) {
+    await supabase.from('wallets').delete().in('id', duplicateIdsToDelete);
+  }
+
+  let wallets = uniqueWallets;
+
+  // Only create starter wallets if user TRULY has 0 wallets
+  if (wallets.length === 0 && (!rawWallets || rawWallets.length === 0)) {
     const starterWallets = [
       { user_id: user.id, name: 'BCA Utama', type: 'bank', initial_balance: 12500000, color: 'indigo' },
       { user_id: user.id, name: 'GoPay Saldo', type: 'ewallet', initial_balance: 1750000, color: 'cyan' },
       { user_id: user.id, name: 'Kas Tunai', type: 'cash', initial_balance: 500000, color: 'emerald' },
     ];
     const { data: created } = await supabase.from('wallets').insert(starterWallets).select();
-    if (created) wallets.push(...created);
+    if (created) wallets = created;
   }
 
   // 2. Fetch Recent Transactions
@@ -118,11 +137,9 @@ export async function getDashboardData(): Promise<DashboardData> {
           walletBalances[tx.wallet_id] -= amt;
         }
       } else if (tx.type === 'transfer') {
-        // Source wallet decreases
         if (walletBalances[tx.wallet_id] !== undefined) {
           walletBalances[tx.wallet_id] -= amt;
         }
-        // Destination wallet increases
         if (tx.destination_wallet_id && walletBalances[tx.destination_wallet_id] !== undefined) {
           walletBalances[tx.destination_wallet_id] += amt;
         }
