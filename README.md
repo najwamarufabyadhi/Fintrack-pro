@@ -102,3 +102,4 @@ Buka [http://localhost:3000](http://localhost:3000) di browser laptop atau [http
      - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - Klik **Deploy**.
 3. Selesai! Aplikasi Anda langsung live dengan performa edge CDN global.
+

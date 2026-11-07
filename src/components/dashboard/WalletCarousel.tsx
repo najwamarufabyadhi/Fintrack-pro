@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { CreditCard, Smartphone, Banknote, Plus, ChevronRight, TrendingUp } from 'lucide-react';
-import { formatIDR } from '@/lib/utils';
+import { formatIDR, getWalletGradient } from '@/lib/utils';
 import { Wallet } from '@/lib/types/database';
 
 interface WalletCarouselProps {
@@ -44,9 +44,9 @@ export function WalletCarousel({ wallets = [] }: WalletCarouselProps) {
         {wallets.map((wallet) => (
           <div
             key={wallet.id}
-            className={`flex-shrink-0 w-44 rounded-2xl p-4 text-white bg-gradient-to-br ${
-              wallet.color || 'from-blue-600 to-indigo-700'
-            } shadow-md shadow-slate-900/10 transition-transform active:scale-98`}
+            className={`flex-shrink-0 w-44 rounded-2xl p-4 text-white bg-gradient-to-br ${getWalletGradient(
+              wallet.color
+            )} shadow-md shadow-slate-900/10 transition-transform active:scale-98`}
           >
             <div className="flex items-center justify-between">
               <span className="p-1.5 rounded-lg bg-white/20 backdrop-blur-xs">

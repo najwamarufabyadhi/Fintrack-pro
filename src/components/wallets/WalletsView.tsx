@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, CreditCard, Smartphone, Banknote, TrendingUp, ShieldAlert } from 'lucide-react';
-import { formatIDR } from '@/lib/utils';
+import { formatIDR, getWalletGradient } from '@/lib/utils';
 import { Wallet } from '@/lib/types/database';
 import { AddWalletModal } from './AddWalletModal';
 import Link from 'next/link';
@@ -77,9 +77,9 @@ export function WalletsView({ wallets, isLoggedIn }: WalletsViewProps) {
         {wallets.map((wallet) => (
           <div
             key={wallet.id}
-            className={`rounded-2xl p-5 text-white bg-gradient-to-br ${
-              wallet.color || 'from-blue-600 to-indigo-700'
-            } shadow-lg shadow-slate-900/10 flex flex-col justify-between h-36 relative overflow-hidden`}
+            className={`rounded-2xl p-5 text-white bg-gradient-to-br ${getWalletGradient(
+              wallet.color
+            )} shadow-lg shadow-slate-900/10 flex flex-col justify-between h-36 relative overflow-hidden`}
           >
             {/* Background subtle circle */}
             <div className="absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-white/10 blur-xl pointer-events-none" />

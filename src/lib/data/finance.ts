@@ -53,9 +53,9 @@ export async function getDashboardData(): Promise<DashboardData> {
   // If new user with no wallets yet, auto-create starter pockets
   if (wallets.length === 0) {
     const starterWallets = [
-      { user_id: user.id, name: 'BCA Utama', type: 'bank', initial_balance: 12500000, color: 'from-blue-600 to-indigo-700' },
-      { user_id: user.id, name: 'GoPay Saldo', type: 'ewallet', initial_balance: 1750000, color: 'from-sky-500 to-blue-600' },
-      { user_id: user.id, name: 'Kas Tunai', type: 'cash', initial_balance: 500000, color: 'from-emerald-600 to-teal-700' },
+      { user_id: user.id, name: 'BCA Utama', type: 'bank', initial_balance: 12500000, color: 'indigo' },
+      { user_id: user.id, name: 'GoPay Saldo', type: 'ewallet', initial_balance: 1750000, color: 'cyan' },
+      { user_id: user.id, name: 'Kas Tunai', type: 'cash', initial_balance: 500000, color: 'emerald' },
     ];
     const { data: created } = await supabase.from('wallets').insert(starterWallets).select();
     if (created) wallets.push(...created);

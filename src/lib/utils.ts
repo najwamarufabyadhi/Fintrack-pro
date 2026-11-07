@@ -36,3 +36,32 @@ export function formatDateID(dateInput: string | Date): string {
   }).format(date);
 }
 
+/**
+ * Maps short wallet color tokens to full Tailwind CSS gradient classes.
+ * Kept short (e.g. 'indigo', 'cyan') to fit VARCHAR(20) database column.
+ */
+export function getWalletGradient(color?: string): string {
+  switch (color) {
+    case 'indigo':
+    case 'from-blue-600 to-indigo-700':
+      return 'from-blue-600 to-indigo-700';
+    case 'cyan':
+    case 'from-sky-500 to-blue-600':
+      return 'from-sky-500 to-blue-600';
+    case 'emerald':
+    case 'from-emerald-600 to-teal-700':
+      return 'from-emerald-600 to-teal-700';
+    case 'amber':
+    case 'from-amber-600 to-orange-700':
+      return 'from-amber-600 to-orange-700';
+    case 'rose':
+    case 'from-rose-600 to-pink-700':
+      return 'from-rose-600 to-pink-700';
+    case 'violet':
+    case 'from-purple-600 to-indigo-800':
+      return 'from-purple-600 to-indigo-800';
+    default:
+      if (color && color.startsWith('from-')) return color;
+      return 'from-blue-600 to-indigo-700';
+  }
+}

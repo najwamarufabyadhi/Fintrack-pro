@@ -19,12 +19,12 @@ const walletTypeOptions: { type: WalletType; label: string; icon: React.Componen
 ];
 
 const colorOptions = [
-  { label: 'Indigo', value: 'from-blue-600 to-indigo-700' },
-  { label: 'Cyan', value: 'from-sky-500 to-blue-600' },
-  { label: 'Emerald', value: 'from-emerald-600 to-teal-700' },
-  { label: 'Amber', value: 'from-amber-600 to-orange-700' },
-  { label: 'Rose', value: 'from-rose-600 to-pink-700' },
-  { label: 'Violet', value: 'from-purple-600 to-indigo-800' },
+  { label: 'Indigo', value: 'indigo', gradient: 'from-blue-600 to-indigo-700' },
+  { label: 'Cyan', value: 'cyan', gradient: 'from-sky-500 to-blue-600' },
+  { label: 'Emerald', value: 'emerald', gradient: 'from-emerald-600 to-teal-700' },
+  { label: 'Amber', value: 'amber', gradient: 'from-amber-600 to-orange-700' },
+  { label: 'Rose', value: 'rose', gradient: 'from-rose-600 to-pink-700' },
+  { label: 'Violet', value: 'violet', gradient: 'from-purple-600 to-indigo-800' },
 ];
 
 export function AddWalletModal({ isOpen, onClose }: AddWalletModalProps) {
@@ -177,7 +177,7 @@ export function AddWalletModal({ isOpen, onClose }: AddWalletModalProps) {
                   key={c.value}
                   type="button"
                   onClick={() => setColor(c.value)}
-                  className={`h-7 w-7 rounded-full bg-gradient-to-br ${c.value} transition-transform ${
+                  className={`h-7 w-7 rounded-full bg-gradient-to-br ${c.gradient} transition-transform ${
                     color === c.value ? 'ring-2 ring-indigo-600 ring-offset-2 scale-110' : 'opacity-70 hover:opacity-100'
                   }`}
                 />
